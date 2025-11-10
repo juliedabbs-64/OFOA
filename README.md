@@ -48,21 +48,22 @@ This project addresses these issues by providing a **contactless, real-time, and
 
 ## 📁 Folder Structure (proposed)
 
+```
 online-food-ordering/
 │
 ├── index.html
 ├── /assets
-│ ├── /images
-│ ├── /css
-│ │ └── style.css
-│ └── /js
-│ └── script.js
+│   ├── /images
+│   ├── /css
+│   │   └── style.css
+│   └── /js
+│       └── script.js
 ├── /admin
-│ ├── login.html
-│ └── dashboard.html
+│   ├── login.html
+│   └── dashboard.html
 ├── README.md
 └── .gitignore
-
+```
 
 ---
 
