@@ -1,0 +1,23 @@
+# Node and dependency folders (in case you add tooling later)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# System files
+.DS_Store
+Thumbs.db
+
+# VS Code settings
+.vscode/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.swp
+
+# Environment and config
+.env
+.env.local
+
+# Ignore local setup scripts
+setup/
