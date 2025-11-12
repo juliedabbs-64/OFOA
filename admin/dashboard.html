@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FoodHub | Admin Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="min-h-screen bg-gray-100 text-gray-800">
+  <!-- Header -->
+  <header class="bg-red-600 text-white p-4 flex justify-between items-center">
+    <h1 class="text-2xl font-bold">Admin Dashboard</h1>
+    <div class="space-x-4">
+      <a href="../index.html" class="hover:underline">Back to Menu</a>
+      <button id="logoutBtn" class="bg-white text-red-600 px-3 py-1 rounded hover:bg-gray-200">Logout</button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="p-6">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-semibold">Orders</h2>
+      <button id="clearCompletedBtn"
+              class="bg-red-600 text-white px-3 py-1.5 rounded hover:bg-red-700 text-sm">
+        Clear Completed
+      </button>
+    </div>
+
+
+    <!-- Placeholder if no orders exist -->
+    <p id="noOrders" class="text-gray-600 italic">No orders yet.</p>
+
+    <!-- Orders table -->
+    <div class="overflow-x-auto">
+      <table id="orderTable" class="hidden w-full border-collapse border border-gray-300 text-sm">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="border border-gray-300 p-2">Order ID</th>
+            <th class="border border-gray-300 p-2">Customer</th>
+            <th class="border border-gray-300 p-2">Total (£)</th>
+            <th class="border border-gray-300 p-2">Time</th>
+            <th class="border border-gray-300 p-2">Status</th>
+          </tr>
+        </thead>
+        <tbody id="orderTableBody"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- Script -->
+  <script src="../assets/js/dashboard.js"></script>
+</body>
+</html>
