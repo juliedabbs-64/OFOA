@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FoodHub Menu</title>
+
+    <style>
+        :root {
+            --primary: #d4af37;
+            --background: #0b0b0b;
+            --surface: rgba(255,255,255,0.05);
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --radius: 22px;
+        }
+
+        body {
+            margin: 0;
+            background: var(--background);
+            color: var(--text-primary);
+            font-family: "Inter", sans-serif;
+        }
+
+        /* NAVBAR */
+        .lux-nav {
+            width: 100%;
+            padding: 18px 40px;
+            background: rgba(0,0,0,0.55);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .lux-nav-left {
+            font-family: "Cormorant Garamond", serif;
+            font-size: 1.8rem;
+            color: var(--primary);
+        }
+
+        .lux-nav-right a {
+            color: var(--text-primary);
+            margin-left: 20px;
+            text-decoration: none;
+        }
+
+        .lux-nav-right a:hover {
+            color: var(--primary);
+        }
+
+        /* HERO */
+        .hero {
+            width: 100%;
+            height: 260px;
+            background: url("../assets/images/menu/main_image.jpg") center/cover no-repeat;
+            position: relative;
+        }
+
+        .hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,1));
+        }
+
+        .hero-content {
+            position: absolute;
+            bottom: 30px;
+            left: 40px;
+            z-index: 10;
+        }
+
+        .hero-title {
+            font-family: "Cormorant Garamond", serif;
+            font-size: 2.4rem;
+        }
+
+        /* FILTERS */
+        .filter-bar {
+            display: flex;
+            gap: 14px;
+            padding: 24px 40px;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: var(--surface);
+            border-radius: 14px;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background: var(--primary);
+            color: black;
+        }
+
+        /* GRID */
+        .menu-grid {
+            padding: 0 40px 60px;
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0,1fr));
+            gap: 22px;
+        }
+
+        .dish-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            overflow: hidden;
+            position: relative;
+            height: 240px;
+        }
+
+        .dish-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+       .info-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary);
+            color: black;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            z-index: 9999;
+            opacity: 0.85;
+            transition: 0.2s;
+        }
+
+        .info-btn:hover {
+            opacity: 1;
+        }
+
+                .add-circle {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.6);
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1.4rem;
+        }
+
+        /* MODAL */
+        #detailOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            opacity: 0;
+            visibility: hidden;
+            transition: .3s;
+            z-index: 2000;
+        }
+
+        #detailOverlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #detailModal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 540px;
+            max-height: 80vh;
+            background: #111;
+            padding: 20px;
+            border-radius: 18px;
+            transform: translate(-50%, -50%) scale(0.85);
+            opacity: 0;
+            transition: .3s;
+            overflow-y: auto;
+            z-index: 2100;
+        }
+
+        #detailModal.active {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<!-- NAV -->
+<nav class="lux-nav">
+    <div class="lux-nav-left">FOODHUB</div>
+    <div class="lux-nav-right">
+        <a href="index.html">Home</a>
+        <a href="menu.html">Menu</a>
+        <a href="login.html">Login</a>
+        <a href="admin.html">Admin</a>
+        <a href="staff.html">Staff</a>
+
+        <!-- CART BUTTON -->
+        <a href="checkout.html" id="cartButton" style="position:relative; margin-left:20px;">
+            🛒 <span id="cartCount" 
+                    style="
+                        background:#d4af37;
+                        color:black;
+                        padding:2px 6px;
+                        border-radius:8px;
+                        font-size:0.8rem;
+                        position:absolute;
+                        top:-8px;
+                        right:-12px;
+                    ">
+                0
+            </span>
+        </a>
+    </div>
+
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+    <div class="hero-content">
+        <div class="hero-title">A Journey Through Global Cuisine</div>
+    </div>
+</div>
+
+<!-- FILTERS -->
+<div class="filter-bar">
+    <div class="filter-btn active" data-filter="all">All</div>
+    <div class="filter-btn" data-filter="japanese">Japanese</div>
+    <div class="filter-btn" data-filter="chinese">Chinese</div>
+    <div class="filter-btn" data-filter="indian">Indian</div>
+    <div class="filter-btn" data-filter="italian">Italian</div>
+    <div class="filter-btn" data-filter="american">American</div>
+    <div class="filter-btn" data-filter="mexican">Mexican</div>
+</div>
+
+<!-- GRID -->
+<div id="menuGrid" class="menu-grid"></div>
+
+<!-- MODAL -->
+<div id="detailOverlay"></div>
+
+<div id="detailModal">
+    <h2 id="detailName" style="color:#d4af37"></h2>
+    <p id="detailDesc"></p>
+    <p id="detailPrice"></p>
+    <p id="detailAllergens"></p>
+    <button onclick="closeDetail()" style="margin-top:12px;">Close</button>
+</div>
+
+<script type="module">
+    console.log("Menu script loaded.");
+
+    /* LOAD MENU DATA */
+    async function ensureMenuDataLoaded() {
+        let data = localStorage.getItem("menuData");
+        if (!data) {
+            const res = await fetch("../data/menu.json");
+            const json = await res.json();
+            localStorage.setItem("menuData", JSON.stringify(json));
+        }
+    }
+
+    await ensureMenuDataLoaded();
+    const menu = JSON.parse(localStorage.getItem("menuData"));
+
+    const grid = document.getElementById("menuGrid");
+
+    /* RENDER MENU */
+    function renderMenu(filter = "all") {
+        grid.innerHTML = "";
+
+        const list = filter === "all" ? menu : menu.filter(i => i.cuisine === filter);
+
+        list.forEach(item => {
+            const card = document.createElement("div");
+            card.className = "dish-card";
+
+            card.innerHTML = `
+                <img src="${item.image}" alt="${item.name}">
+                <button class="info-btn" onclick="openDetail('${item.id}')">i</button>
+                <div class="add-circle" onclick="addToCart('${item.id}')">+</div>
+            `;
+
+            grid.appendChild(card);
+        });
+    }
+
+    /* FILTER BUTTONS */
+    document.querySelectorAll(".filter-btn").forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            renderMenu(btn.dataset.filter);
+        };
+    });
+
+    renderMenu();
+
+    /* DETAIL MODAL */
+    window.openDetail = function(id) {
+        const item = menu.find(i => i.id === id);
+
+        document.getElementById("detailName").textContent = item.name;
+        document.getElementById("detailDesc").textContent = item.description;
+        document.getElementById("detailPrice").textContent = "£" + item.price.toFixed(2);
+        document.getElementById("detailAllergens").textContent = "Allergens: " + item.allergens.join(", ");
+
+        document.getElementById("detailOverlay").classList.add("active");
+        document.getElementById("detailModal").classList.add("active");
+    };
+
+    window.closeDetail = function() {
+        document.getElementById("detailOverlay").classList.remove("active");
+        document.getElementById("detailModal").classList.remove("active");
+    };
+
+    /* ADD TO CART */
+   import { addToCart as addToCartFunction } from "../js/cart.js";
+
+    // make it available to onclick=""
+    window.addToCart = addToCartFunction;
+
+    import { getCart } from "../js/cart.js";
+
+    function updateCartCount() {
+        const cart = getCart();
+        const count = cart.reduce((sum, item) => sum + item.qty, 0);
+        document.getElementById("cartCount").textContent = count;
+    }
+
+    updateCartCount();
+
+    // Re-bind updateCartCount to run after adding to cart
+    window.addToCart = (id) => {
+        addToCartFunction(id);
+        updateCartCount();
+    };
+
+
+</script>
+
+</body>
+</html>

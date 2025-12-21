@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Staff Dashboard — FoodHub</title>
+
+    <style>
+        body {
+            margin: 0;
+            background: #0b0b0b;
+            color: white;
+            font-family: "Inter", sans-serif;
+        }
+
+        /* NAV */
+        .lux-nav {
+            width: 100%;
+            padding: 18px 40px;
+            background: rgba(0,0,0,0.55);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+        }
+
+        .lux-nav-left {
+            font-family: "Cormorant Garamond", serif;
+            font-size: 1.8rem;
+            color: #d4af37;
+        }
+
+        .lux-nav-right a {
+            margin-left: 20px;
+            color: white;
+            text-decoration: none;
+        }
+        .lux-nav-right a:hover {
+            color: #d4af37;
+        }
+
+        .logout-btn {
+            background: #ff5656;
+            padding: 6px 14px;
+            border-radius: 6px;
+        }
+
+        /* TITLE */
+        h1 {
+            font-family: "Cormorant Garamond", serif;
+            color: #d4af37;
+            margin: 30px 40px;
+            font-size: 2rem;
+        }
+
+        /* COLUMNS */
+        .orders-wrapper {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            padding: 0 40px 40px;
+        }
+
+        .order-column {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 18px;
+        }
+
+        .order-column h2 {
+            margin-top: 0;
+            font-family: "Cormorant Garamond", serif;
+            color: #d4af37;
+        }
+
+        .order-card {
+            background: rgba(255,255,255,0.07);
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 14px;
+        }
+
+        .order-card p {
+            margin: 6px 0;
+        }
+
+        button {
+            padding: 6px 12px;
+            background: #d4af37;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 12px;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: white;
+            color: black;
+        }
+
+        .archive-btn {
+            background: #ff5656;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- NAV -->
+<nav class="lux-nav">
+    <div class="lux-nav-left">FOODHUB STAFF</div>
+
+    <div class="lux-nav-right">
+        <a href="index.html">Home</a>
+        <a href="menu.html">Menu</a>
+        <a href="#" id="logoutBtn" class="logout-btn">Logout</a>
+    </div>
+</nav>
+
+<h1>Order Management</h1>
+
+<!-- ORDER COLUMNS -->
+<div class="orders-wrapper">
+    <div class="order-column" id="colPaid">
+        <h2>Paid</h2>
+    </div>
+
+    <div class="order-column" id="colProgress">
+        <h2>In Progress</h2>
+    </div>
+
+    <div class="order-column" id="colDone">
+        <h2>Completed</h2>
+    </div>
+
+    <div class="order-column" id="colRepeat">
+        <h2>Repeat Order</h2>
+    </div>
+</div>
+
+<script type="module">
+    console.log("Staff script running.");
+
+    /* 1. ROLE PROTECTION — Staff + Admin allowed */
+    const user = JSON.parse(localStorage.getItem("currentUser"));
+    if (!user || (user.role !== "staff" && user.role !== "admin")) {
+        window.location.href = "login.html";
+    }
+
+    /* 2. ORDER HELPERS */
+    function getOrders() {
+        return JSON.parse(localStorage.getItem("orders") || "[]");
+    }
+
+    function saveOrders(list) {
+        localStorage.setItem("orders", JSON.stringify(list));
+    }
+
+    /* DOM REFERENCES */
+    const colPaid = document.getElementById("colPaid");
+    const colProgress = document.getElementById("colProgress");
+    const colDone = document.getElementById("colDone");
+    const colRepeat = document.getElementById("colRepeat");
+
+    /* 3. RENDER ORDERS */
+    function renderOrders() {
+        const orders = getOrders();
+
+        /* Reset columns */
+        colPaid.innerHTML = "<h2>Paid</h2>";
+        colProgress.innerHTML = "<h2>In Progress</h2>";
+        colDone.innerHTML = "<h2>Completed</h2>";
+        colRepeat.innerHTML = "<h2>Repeat Order</h2>";
+
+        if (orders.length === 0) {
+            colPaid.innerHTML += "<p>No orders yet.</p>";
+            return;
+        }
+
+        orders.forEach(order => {
+            const card = document.createElement("div");
+            card.className = "order-card";
+
+            const itemsList = order.items
+                .map(i => `${i.name} × ${i.qty}`)
+                .join("<br>");
+
+            card.innerHTML = `
+                <p><strong>${order.id}</strong></p>
+                <p>${itemsList}</p>
+                <p><em>${new Date(order.timestamp).toLocaleString()}</em></p>
+            `;
+
+            const btn = document.createElement("button");
+
+            if (order.status === "Paid") {
+                btn.textContent = "Start Order";
+                btn.onclick = () => updateStatus(order.id, "In Progress");
+                colPaid.appendChild(card);
+            } 
+            else if (order.status === "In Progress") {
+                btn.textContent = "Mark Completed";
+                btn.onclick = () => updateStatus(order.id, "Completed");
+                colProgress.appendChild(card);
+            }
+            else if (order.status === "Completed") {
+                btn.textContent = "Move to Repeat";
+                btn.onclick = () => updateStatus(order.id, "Repeat");
+                colDone.appendChild(card);
+            }
+            else if (order.status === "Repeat") {
+                btn.textContent = "Archive";
+                btn.classList.add("archive-btn");
+                btn.onclick = () => archiveOrder(order.id);
+                colRepeat.appendChild(card);
+            }
+
+            card.appendChild(btn);
+        });
+    }
+
+    function updateStatus(id, status) {
+        const orders = getOrders();
+        const index = orders.findIndex(o => o.id === id);
+
+        if (index > -1) {
+            orders[index].status = status;
+            saveOrders(orders);
+            renderOrders();
+        }
+    }
+
+    function archiveOrder(id) {
+        saveOrders(getOrders().filter(o => o.id !== id));
+        renderOrders();
+    }
+
+    /* 4. LOGOUT */
+    document.getElementById("logoutBtn").onclick = () => {
+        localStorage.removeItem("currentUser");
+        window.location.href = "index.html";
+    };
+
+    /* INITIAL RENDER */
+    renderOrders();
+</script>
+
+</body>
+</html>

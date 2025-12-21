@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel — FoodHub</title>
+
+    <style>
+        body {
+            margin: 0;
+            background: #0b0b0b;
+            color: #ffffff;
+            font-family: "Inter", sans-serif;
+        }
+
+        /* NAVBAR */
+        .lux-nav {
+            width: 100%;
+            padding: 18px 40px;
+            background: rgba(0,0,0,0.55);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        .lux-nav-left {
+            font-family: "Cormorant Garamond", serif;
+            font-size: 1.8rem;
+            color: #d4af37;
+        }
+
+        .lux-nav-right a {
+            color: white;
+            margin-left: 20px;
+            text-decoration: none;
+        }
+        .lux-nav-right a:hover {
+            color: #d4af37;
+        }
+
+        .logout-btn {
+            background: #ff5656;
+            padding: 6px 14px;
+            border-radius: 6px;
+        }
+
+        /* TITLE */
+        h1 {
+            font-family: "Cormorant Garamond", serif;
+            color: #d4af37;
+            margin: 30px 40px;
+            font-size: 2rem;
+        }
+
+        /* TABLE */
+        .admin-container {
+            padding: 0 40px 60px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255,255,255,0.05);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        th {
+            background: rgba(255,255,255,0.1);
+            color: #d4af37;
+        }
+
+        button {
+            padding: 6px 14px;
+            margin: 4px;
+            background: #d4af37;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .danger-btn {
+            background: #ff5656;
+        }
+
+        /* MODAL */
+        #modalOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: .3s;
+            z-index: 2000;
+        }
+
+        #modalOverlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #editModal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 460px;
+            padding: 20px;
+            background: #111;
+            border-radius: 12px;
+            transform: translate(-50%, -50%) scale(.8);
+            opacity: 0;
+            transition: .3s;
+            z-index: 2100;
+        }
+
+        #editModal.active {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            background: #222;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 8px;
+        }
+
+        textarea { height: 80px; }
+
+    </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="lux-nav">
+    <div class="lux-nav-left">FOODHUB ADMIN</div>
+
+    <div class="lux-nav-right">
+        <a href="index.html">Home</a>
+        <a href="menu.html">Menu</a>
+        <a href="staff.html">Staff</a>
+        <a href="#" id="logoutBtn" class="logout-btn">Logout</a>
+    </div>
+</nav>
+
+<h1>Menu Manager</h1>
+
+<div class="admin-container">
+
+    <button id="addNewBtn">Add New Dish</button>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Cuisine</th>
+            <th>Price</th>
+            <th>Allergens</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+
+        <tbody id="menuTable"></tbody>
+    </table>
+</div>
+
+<!-- MODAL BACKDROP -->
+<div id="modalOverlay"></div>
+
+<!-- EDIT/ADD MODAL -->
+<div id="editModal">
+    <h2 id="modalTitle" style="color:#d4af37"></h2>
+
+    <input id="dishName" placeholder="Name">
+    <select id="dishCuisine">
+        <option value="japanese">Japanese</option>
+        <option value="chinese">Chinese</option>
+        <option value="indian">Indian</option>
+        <option value="italian">Italian</option>
+        <option value="american">American</option>
+        <option value="mexican">Mexican</option>
+    </select>
+
+    <input id="dishImage" placeholder="Image path">
+    <input id="dishPrice" type="number" step="0.01" placeholder="Price">
+
+    <textarea id="dishDescription" placeholder="Description"></textarea>
+    <input id="dishAllergens" placeholder="Allergens (comma-separated)">
+    <input id="dishDietary" placeholder="Dietary tags (comma-separated)">
+
+    <button id="saveBtn">Save</button>
+</div>
+
+
+<script type="module">
+
+    /* 1. Role protection */
+    const user = JSON.parse(localStorage.getItem("currentUser"));
+    if (!user || user.role !== "admin") {
+        window.location.href = "login.html";
+    }
+
+    /* 2. Load menu.json if needed */
+    async function ensureMenuLoaded() {
+        if (!localStorage.getItem("menuData")) {
+            const res = await fetch("../data/menu.json");
+            const json = await res.json();
+            localStorage.setItem("menuData", JSON.stringify(json));
+        }
+    }
+
+    await ensureMenuLoaded();
+
+    /* DOM references */
+    const table = document.getElementById("menuTable");
+    const overlay = document.getElementById("modalOverlay");
+    const modal = document.getElementById("editModal");
+
+    let editingId = null;
+
+    function getMenu() {
+        return JSON.parse(localStorage.getItem("menuData"));
+    }
+
+    function saveMenu(data) {
+        localStorage.setItem("menuData", JSON.stringify(data));
+    }
+
+    /* 3. RENDER TABLE */
+    function renderTable() {
+        const menu = getMenu();
+        table.innerHTML = "";
+
+        menu.forEach(item => {
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+                <td>${item.name}</td>
+                <td>${item.cuisine}</td>
+                <td>£${item.price.toFixed(2)}</td>
+                <td>${item.allergens.join(", ")}</td>
+                <td>
+                    <button onclick="editItem('${item.id}')">Edit</button>
+                    <button class="danger-btn" onclick="deleteItem('${item.id}')">Delete</button>
+                </td>
+            `;
+
+            table.appendChild(row);
+        });
+    }
+
+    renderTable();
+
+    /* 4. OPEN MODAL */
+    function openModal(title) {
+        document.getElementById("modalTitle").textContent = title;
+        overlay.classList.add("active");
+        modal.classList.add("active");
+    }
+
+    /* 5. CLOSE MODAL */
+    function closeModal() {
+        overlay.classList.remove("active");
+        modal.classList.remove("active");
+        editingId = null;
+    }
+
+    overlay.onclick = closeModal;
+
+    /* 6. ADD NEW DISH */
+    document.getElementById("addNewBtn").onclick = () => {
+        editingId = null;
+
+        dishName.value = "";
+        dishCuisine.value = "japanese";
+        dishImage.value = "";
+        dishPrice.value = "";
+        dishDescription.value = "";
+        dishAllergens.value = "";
+        dishDietary.value = "";
+
+        openModal("Add New Dish");
+    };
+
+    /* 7. EDIT EXISTING DISH */
+    window.editItem = function(id) {
+        const menu = getMenu();
+        const dish = menu.find(i => i.id === id);
+
+        editingId = id;
+
+        dishName.value = dish.name;
+        dishCuisine.value = dish.cuisine;
+        dishImage.value = dish.image;
+        dishPrice.value = dish.price;
+        dishDescription.value = dish.description;
+        dishAllergens.value = dish.allergens.join(", ");
+        dishDietary.value = dish.dietary.join(", ");
+
+        openModal("Edit Dish");
+    };
+
+    /* 8. DELETE */
+    window.deleteItem = function(id) {
+        if (!confirm("Delete this dish?")) return;
+
+        const updated = getMenu().filter(i => i.id !== id);
+        saveMenu(updated);
+        renderTable();
+    };
+
+    /* 9. SAVE */
+    document.getElementById("saveBtn").onclick = () => {
+        const menu = getMenu();
+
+        const updatedDish = {
+            id: editingId || "dish-" + Date.now(),
+            name: dishName.value,
+            cuisine: dishCuisine.value,
+            image: dishImage.value,
+            price: parseFloat(dishPrice.value),
+            description: dishDescription.value,
+            nutrition: { calories: 0, protein: 0, fat: 0, carbs: 0 },
+            allergens: dishAllergens.value.split(",").map(x => x.trim()).filter(x => x),
+            dietary: dishDietary.value.split(",").map(x => x.trim()).filter(x => x)
+        };
+
+        if (editingId) {
+            const idx = menu.findIndex(i => i.id === editingId);
+            menu[idx] = updatedDish;
+        } else {
+            menu.push(updatedDish);
+        }
+
+        saveMenu(menu);
+        renderTable();
+        closeModal();
+    };
+
+    /* 10. LOGOUT */
+    document.getElementById("logoutBtn").onclick = () => {
+        localStorage.removeItem("currentUser");
+        window.location.href = "index.html";
+    };
+
+</script>
+
+</body>
+</html>

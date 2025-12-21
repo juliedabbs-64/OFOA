@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login — FoodHub</title>
+
+    <style>
+        body {
+            margin: 0;
+            background: #0b0b0b;
+            color: white;
+            font-family: "Inter", sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-box {
+            width: 360px;
+            background: rgba(255,255,255,0.05);
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        h1 {
+            font-family: "Cormorant Garamond", serif;
+            color: #d4af37;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 12px;
+            border-radius: 10px;
+            border: 1px solid #333;
+            background: #111;
+            color: white;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 18px;
+            background: #d4af37;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            color: black;
+        }
+
+        .error {
+            color: #ff6b6b;
+            margin-top: 12px;
+        }
+
+        a {
+            margin-top: 14px;
+            display: block;
+            color: #d4af37;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+<div class="login-box">
+    <h1>FoodHub Login</h1>
+
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+
+    <button id="loginBtn">Login</button>
+    <div id="errorMsg" class="error"></div>
+
+    <a href="/src/pages/index.html">Return Home</a>
+</div>
+
+<script type="module">
+    import { login } from "/src/js/auth.js";
+
+    const email = document.getElementById("email");
+    const pass = document.getElementById("password");
+    const btn = document.getElementById("loginBtn");
+    const message = document.getElementById("errorMsg");
+
+    btn.onclick = () => {
+        const result = login(email.value.trim(), pass.value.trim());
+
+        if (!result.success) {
+            message.textContent = result.message;
+            return;
+        }
+
+        if (result.user.role === "admin") {
+            window.location.href = "/src/pages/admin.html";
+        }
+
+        if (result.user.role === "staff") {
+            window.location.href = "/src/pages/staff.html";
+        }
+    };
+</script>
+
+</body>
+</html>

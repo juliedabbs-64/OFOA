@@ -1,0 +1,225 @@
+/* ============================================
+   LUXURY DESIGN SYSTEM — MICHELIN EDITION
+   FINAL PRODUCTION VERSION
+   ============================================ */
+
+:root {
+    --gold: #d4af37;          /* Warm, refined gold */
+    --gold-dark: #b89730;     /* Deeper gold shadow */
+    --ivory: #f8f5f0;         /* Creamy white */
+    --charcoal: #0f0f0f;      /* Ink-black */
+    --radius: 24px;
+}
+
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body.lux-login-body {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--charcoal);
+    min-height: 100vh;
+    color: var(--ivory);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================
+   HERO BACKGROUND
+   ============================================ */
+
+.lux-container {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: url("../assets/images/login_background.png") center/cover no-repeat;
+    position: relative;
+}
+
+.lux-container::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 15, 15, 0.35); /* Dark overlay for mood */
+    backdrop-filter: brightness(1.05) contrast(1.05);
+    z-index: 0;
+}
+
+.lux-container::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 0%, rgba(15, 15, 15, 0.4) 100%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* ============================================
+   LOGIN PANEL
+   ============================================ */
+
+.lux-login-panel {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 460px;
+    padding: 0 20px;
+}
+
+/* ============================================
+   GLASS CARD
+   ============================================ */
+
+.lux-login-card {
+    width: 100%;
+    padding: 56px 48px; /* Generous breathing room */
+    
+    background: rgba(12, 12, 12, 0.72); /* Dense smoked glass */
+    backdrop-filter: blur(24px) saturate(140%);
+    -webkit-backdrop-filter: blur(24px) saturate(140%);
+    
+    border: 1px solid rgba(212, 175, 55, 0.18); /* Gold-tinted edge */
+    border-radius: var(--radius);
+    
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.85);
+}
+
+/* ============================================
+   BRANDING
+   ============================================ */
+
+.lux-brand {
+    font-family: "Playfair Display", serif;
+    font-size: 2.1rem;
+    font-weight: 400; /* Light = luxury */
+    color: var(--gold);
+    text-align: center;
+    margin-bottom: 8px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+.lux-tagline {
+    text-align: center;
+    color: #e7dbc7;
+    margin-bottom: 44px;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+    font-weight: 300;
+}
+
+.lux-label {
+    font-size: 0.85rem;
+    color: #eaeaea;
+    margin-bottom: 8px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+/* ============================================
+   INPUTS — COMPLETELY CUSTOM
+   ============================================ */
+
+.lux-input-custom {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--ivory);
+    padding: 16px 18px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    width: 100%;
+    font-size: 1rem;
+}
+
+.lux-input-custom:focus {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+    transform: translateY(-1px);
+    outline: none;
+}
+
+.lux-input-custom::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 300;
+}
+
+/* ============================================
+   BUTTON — COMPLETELY CUSTOM
+   ============================================ */
+
+.lux-btn-custom {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    color: var(--charcoal);
+    padding: 16px;
+    border-radius: 12px;
+    font-weight: 500;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    width: 100%;
+}
+
+.lux-btn-custom:hover {
+    background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(212, 175, 55, 0.25);
+}
+
+/* ============================================
+   BOTTOM TEXT
+   ============================================ */
+
+.lux-bottom {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 32px;
+    font-size: 0.9rem;
+    font-weight: 300;
+}
+
+.lux-link {
+    color: var(--gold);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.lux-link:hover {
+    color: #e8c266;
+    text-decoration: underline;
+}
+
+/* ============================================
+   MOBILE
+   ============================================ */
+
+@media (max-width: 768px) {
+    .lux-container {
+        padding: 20px;
+        background-position: center top;
+    }
+    
+    .lux-login-card {
+        padding: 44px 32px;
+        max-width: 380px;
+    }
+    
+    .lux-brand {
+        font-size: 1.8rem;
+        letter-spacing: 2px;
+    }
+    
+    .lux-tagline {
+        margin-bottom: 36px;
+    }
+}

@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FoodHub — World Menu</title>
+
+    <!-- FONTS -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            background: #0b0b0b;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* ---------------- NAVBAR ---------------- */
+        .lux-nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 26px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0,0,0,0.35);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .lux-nav-left {
+            font-family: "Playfair Display", serif;
+            font-size: 2rem;
+            letter-spacing: 4px;
+            color: #d4af37;
+        }
+
+        .lux-nav-right a {
+            margin-left: 32px;
+            font-size: 1rem;
+            text-decoration: none;
+            color: #eee;
+            transition: .3s;
+        }
+        .lux-nav-right a:hover { color: #d4af37; }
+
+        /* CART ICON */
+        .lux-cart-icon-wrapper {
+            position: relative;
+            margin-left: 30px;
+            cursor: pointer;
+            transition: .3s;
+        }
+        .lux-cart-icon-wrapper:hover { transform: scale(1.08); }
+
+        .lux-cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            min-width: 20px;
+            height: 20px;
+            padding: 0 5px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.25);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.4);
+            font-size: .75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ---------------- HERO ---------------- */
+        .hero {
+            height: 70vh;
+            width: 100%;
+            background: url('../assets/images/menu/Japan-1.jpg') center/cover no-repeat;
+            margin-top: 90px;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            padding: 80px;
+        }
+        .hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+        }
+        .hero-content {
+            position: relative;
+            z-index: 10;
+        }
+        .hero-title {
+            font-family: "Playfair Display", serif;
+            font-size: 3.8rem;
+            color: #fff;
+            margin-bottom: 12px;
+        }
+        .hero-sub {
+            font-size: 1.2rem;
+            color: #d4af37;
+            letter-spacing: 2px;
+        }
+
+        /* ---------------- SECTION HEADERS ---------------- */
+        .section-header {
+            font-family: "Playfair Display", serif;
+            font-size: 2.6rem;
+            margin: 60px 60px 20px;
+            color: #d4af37;
+        }
+
+        /* ------------- FEATURED HERO CARD ------------- */
+        .feature-card {
+            position: relative;
+            margin: 20px 60px 60px;
+            height: 420px;
+            border-radius: 24px;
+            overflow: hidden;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .feature-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .feature-overlay {
+            position: absolute;
+            bottom: 0;
+            padding: 40px;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+        }
+
+        .feature-title {
+            font-family: "Playfair Display", serif;
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .feature-desc {
+            font-size: 1rem;
+            color: #ddd;
+            max-width: 500px;
+        }
+
+        /* ---------------- HORIZONTAL LUX ROW ---------------- */
+        .lux-row {
+            display: flex;
+            overflow-x: auto;
+            padding-left: 60px;
+            gap: 26px;
+            scroll-snap-type: x mandatory;
+        }
+
+        .lux-item {
+            position: relative;
+            min-width: 260px;
+            height: 360px;
+            border-radius: 20px;
+            overflow: hidden;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            scroll-snap-align: start;
+        }
+
+        .lux-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* ADD TO CART — GOLD CIRCLE */
+        .add-circle {
+            position: absolute;
+            bottom: 18px;
+            right: 18px;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid #d4af37;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: #d4af37;
+            cursor: pointer;
+            transition: .3s;
+        }
+        .add-circle:hover {
+            background: rgba(0,0,0,0.7);
+            transform: scale(1.12);
+        }
+
+        /* TOOLTIP */
+        .tooltip {
+            position: absolute;
+            bottom: 72px;
+            right: 12px;
+            padding: 6px 12px;
+            background: rgba(0,0,0,0.65);
+            border: 1px solid rgba(212,175,55,0.4);
+            color: #d4af37;
+            font-size: .8rem;
+            border-radius: 8px;
+            opacity: 0;
+            transform: translateY(6px);
+            pointer-events: none;
+            transition: .25s ease;
+        }
+        .add-circle:hover + .tooltip {
+            opacity: 1;
+            transform: translateY(0px);
+        }
+
+        /* ---------------- MODAL & CART STYLES (ADDED IN PART 3) ---------------- */
+
+    </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="lux-nav">
+    <div class="lux-nav-left">FOODHUB</div>
+
+    <div class="lux-nav-right">
+        <a href="index.html">Home</a>
+        <a href="menu.html" style="color:#d4af37;">Menu</a>
+        <a href="login.html">Login</a>
+        <a href="admin.html">Admin</a>
+        <a href="staff.html">Staff</a>
+
+        <!-- CART ICON -->
+        <div id="cartIconWrapper" class="lux-cart-icon-wrapper">
+            <svg id="cartIcon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2l.5 3M17.5 5l.5-3" />
+                <path d="M3 6h18l-1.5 14h-15z" />
+                <path d="M9 10v6M15 10v6" />
+            </svg>
+            <div id="cartBadge" class="lux-cart-badge">0</div>
+        </div>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-title">A Journey Through Global Cuisine</div>
+        <div class="hero-sub">Curated With Excellence</div>
+    </div>
+</section>
+<!-- ========================= -->
+<!-- EDITORIAL SECTIONS START -->
+<!-- ========================= -->
+
+<!-- JAPAN COLLECTION -->
+<h2 class="section-header">The Japanese Collection</h2>
+
+<!-- Featured Item (Japan-1 assumed to exist) -->
+<div class="feature-card">
+    <img id="jp-feature-img" src="" alt="">
+    <div class="feature-overlay">
+        <div id="jp-feature-title" class="feature-title"></div>
+        <div id="jp-feature-desc" class="feature-desc"></div>
+    </div>
+</div>
+
+<!-- Horizontal Row -->
+<div id="jp-row" class="lux-row"></div>
+
+
+<!-- CHINA COLLECTION -->
+<h2 class="section-header">The Chinese Collection</h2>
+
+<div class="feature-card">
+    <img id="cn-feature-img" src="" alt="">
+    <div class="feature-overlay">
+        <div id="cn-feature-title" class="feature-title"></div>
+        <div id="cn-feature-desc" class="feature-desc"></div>
+    </div>
+</div>
+
+<div id="cn-row" class="lux-row"></div>
+
+
+<!-- INDIA COLLECTION -->
+<h2 class="section-header">The Indian Collection</h2>
+
+<div class="feature-card">
+    <img id="in-feature-img" src="" alt="">
+    <div class="feature-overlay">
+        <div id="in-feature-title" class="feature-title"></div>
+        <div id="in-feature-desc" class="feature-desc"></div>
+    </div>
+</div>
+
+<div id="in-row" class="lux-row"></div>
+
+
+<!-- ITALY COLLECTION -->
+<h2 class="section-header">The Italian Collection</h2>
+
+<div class="feature-card">
+    <img id="it-feature-img" src="" alt="">
+    <div class="feature-overlay">
+        <div id="it-feature-title" class="feature-title"></div>
+        <div id="it-feature-desc" class="feature-desc"></div>
+    </div>
+</div>
+
+<div id="it-row" class="lux-row"></div>
+
+
+<!-- AMERICAN COLLECTION -->
+<h2 class="section-header">The American Collection</h2>
+
+<div class="feature-card">
+    <img id="us-feature-img" src="" alt="">
+    <div class="feature-overlay">
+        <div id="us-feature-title" class="feature-title"></div>
+        <div id="us-feature-desc" class="feature-desc"></div>
+    </div>
+</div>
+
+<div id="us-row" class="lux-row"></div>
+
+
+<!-- MEXICAN COLLECTION -->
+<h2 class="section-header">The Mexican Collection</h2>
+
+<div class="feature-card">
+    <img id="mx-feature-img" src="" alt="">
+    <div class="feature-overlay">
+        <div id="mx-feature-title" class="feature-title"></div>
+        <div id="mx-feature-desc" class="feature-desc"></div>
+    </div>
+</div>
+
+<div id="mx-row" class="lux-row"></div>
+<!-- ========================= -->
+<!-- PRODUCT DETAIL MODAL -->
+<!-- ========================= -->
+<div id="detailOverlay" class="detail-overlay"></div>
+
+<div id="detailModal" class="detail-modal">
+    <div class="detail-content">
+
+        <!-- LEFT: IMAGE -->
+        <div class="detail-image-wrapper">
+            <img id="detailImage" class="detail-image" src="" alt="">
+        </div>
+
+        <!-- RIGHT: DETAILS -->
+        <div class="detail-info">
+
+            <div id="detailClose" class="detail-close">×</div>
+
+            <h1 id="detailTitle" class="detail-title"></h1>
+            <p id="detailCuisine" class="detail-cuisine"></p>
+
+            <p id="detailDescription" class="detail-description"></p>
+
+            <div class="detail-price-wrapper">
+                <span id="detailPrice" class="detail-price"></span>
+            </div>
+
+            <h3 class="detail-subheader">Nutrition</h3>
+            <table class="detail-nutrition-table">
+                <tr><td>Calories</td><td id="nutCalories"></td></tr>
+                <tr><td>Protein</td><td id="nutProtein"></td></tr>
+                <tr><td>Fat</td><td id="nutFat"></td></tr>
+                <tr><td>Carbs</td><td id="nutCarbs"></td></tr>
+            </table>
+
+            <h3 class="detail-subheader">Allergens</h3>
+            <div id="detailAllergens" class="detail-badges"></div>
+
+            <h3 class="detail-subheader">Dietary</h3>
+            <div id="detailDietary" class="detail-badges"></div>
+
+            <button id="detailAddBtn" class="detail-add-btn">Add to Cart</button>
+        </div>
+    </div>
+</div>
+
+
+<!-- ========================= -->
+<!-- CART DRAWER -->
+<!-- ========================= -->
+<div id="cartDrawerOverlay" class="lux-drawer-overlay"></div>
+
+<div id="cartDrawer" class="lux-cart-drawer">
+    <h2 class="lux-drawer-title">Your Order</h2>
+
+    <div id="cartItems" class="lux-cart-items"></div>
+
+    <div class="lux-cart-footer">
+        <div class="lux-cart-total">
+            <span>Total</span>
+            <span id="cartTotal">£0.00</span>
+        </div>
+
+        <button onclick="window.location.href='cart.html'" class="lux-checkout-btn">
+            Checkout
+        </button>
+    </div>
+</div>
+
+
+<!-- ========================= -->
+<!-- JAVASCRIPT -->
+<!-- ========================= -->
+<script type="module">
+    import menuData from "../data/menuData.js";
+    import { addToCart, getCart } from "../js/cart.js";
+
+    /* UTILS: group items by cuisine */
+    function byCuisine(type) {
+        return menuData.filter(i => i.cuisine === type);
+    }
+
+    /* -------- FEATURED & ROW GENERATION -------- */
+    function populateSection(cuisine, featureImgId, featureTitleId, featureDescId, rowId) {
+        const items = byCuisine(cuisine);
+        if (!items.length) return;
+
+        const feature = items[0];
+
+        document.getElementById(featureImgId).src = feature.image;
+        document.getElementById(featureTitleId).textContent = feature.name;
+        document.getElementById(featureDescId).textContent = feature.description;
+
+        const row = document.getElementById(rowId);
+        row.innerHTML = "";
+
+        items.forEach(item => {
+            row.innerHTML += `
+            <div class="lux-item" data-id="${item.id}">
+                <img src="${item.image}">
+                <div class="add-circle" data-id="${item.id}">+</div>
+                <div class="tooltip">Add to basket</div>
+            </div>
+        `;
+        });
+    }
+
+    /* Populate all cuisine sections */
+    populateSection("japanese", "jp-feature-img", "jp-feature-title", "jp-feature-desc", "jp-row");
+    populateSection("chinese",  "cn-feature-img", "cn-feature-title", "cn-feature-desc", "cn-row");
+    populateSection("indian",   "in-feature-img", "in-feature-title", "in-feature-desc", "in-row");
+    populateSection("italian",  "it-feature-img", "it-feature-title", "it-feature-desc", "it-row");
+    populateSection("american", "us-feature-img", "us-feature-title", "us-feature-desc", "us-row");
+    populateSection("mexican",  "mx-feature-img", "mx-feature-title", "mx-feature-desc", "mx-row");
+
+
+    /* ---------------- DETAIL MODAL ---------------- */
+    const detailOverlay = document.getElementById("detailOverlay");
+    const detailModal   = document.getElementById("detailModal");
+    const detailClose   = document.getElementById("detailClose");
+
+    const detailImage = document.getElementById("detailImage");
+    const detailTitle = document.getElementById("detailTitle");
+    const detailCuisine = document.getElementById("detailCuisine");
+    const detailDescription = document.getElementById("detailDescription");
+    const detailPrice = document.getElementById("detailPrice");
+
+    const nutCalories = document.getElementById("nutCalories");
+    const nutProtein = document.getElementById("nutProtein");
+    const nutFat = document.getElementById("nutFat");
+    const nutCarbs = document.getElementById("nutCarbs");
+
+    const detailAllergens = document.getElementById("detailAllergens");
+    const detailDietary = document.getElementById("detailDietary");
+    const detailAddBtn = document.getElementById("detailAddBtn");
+
+
+    function openDetail(item) {
+        detailImage.src = item.image;
+        detailTitle.textContent = item.name;
+        detailCuisine.textContent = item.cuisine.toUpperCase();
+        detailDescription.textContent = item.description;
+        detailPrice.textContent = "£" + item.price.toFixed(2);
+
+        nutCalories.textContent = item.nutrition.calories + " kcal";
+        nutProtein.textContent = item.nutrition.protein + " g";
+        nutFat.textContent = item.nutrition.fat + " g";
+        nutCarbs.textContent = item.nutrition.carbs + " g";
+
+        detailAllergens.innerHTML = item.allergens
+            .map(a => `<div class="detail-badge">${a}</div>`)
+            .join("");
+        detailDietary.innerHTML = item.dietary.length
+            ? item.dietary.map(d => `<div class="detail-badge">${d}</div>`).join("")
+            : `<div class="detail-badge">None</div>`;
+
+        detailAddBtn.onclick = () => {
+            addToCart(item);
+            renderCart();
+        };
+
+        detailOverlay.classList.add("active");
+        detailModal.classList.add("active");
+    }
+
+    detailClose.onclick = () => {
+        detailOverlay.classList.remove("active");
+        detailModal.classList.remove("active");
+    };
+    detailOverlay.onclick = detailClose.onclick;
+
+
+    /* OPEN MODAL from feature card or row item */
+    document.addEventListener("click", e => {
+        if (e.target.closest(".lux-item")) {
+            const id = e.target.closest(".lux-item").dataset.id;
+            const item = menuData.find(i => i.id === id);
+            openDetail(item);
+        }
+        if (e.target.classList.contains("feature-card") ||
+            e.target.parentElement?.classList.contains("feature-overlay")) {
+            // Feature card clicked
+            const section = e.target.closest(".feature-card");
+        }
+    });
+
+
+    /* ---------------- ADD TO CART CIRCLE ---------------- */
+    document.addEventListener("click", e => {
+        if (e.target.classList.contains("add-circle")) {
+            const id = e.target.dataset.id;
+            const item = menuData.find(m => m.id === id);
+            addToCart(item);
+            renderCart();
+            e.stopPropagation(); // prevent modal triggering
+        }
+    });
+
+
+    /* ---------------- CART DRAWER ---------------- */
+    const cartIcon = document.getElementById("cartIconWrapper");
+    const drawerOverlay = document.getElementById("cartDrawerOverlay");
+    const drawer = document.getElementById("cartDrawer");
+    const cartItemsDiv = document.getElementById("cartItems");
+    const cartTotalSpan = document.getElementById("cartTotal");
+    const cartBadge = document.getElementById("cartBadge");
+
+    cartIcon.onclick = () => {
+        drawerOverlay.style.opacity = "1";
+        drawerOverlay.style.visibility = "visible";
+        drawer.style.right = "0";
+        renderCart();
+    };
+    drawerOverlay.onclick = () => {
+        drawerOverlay.style.opacity = "0";
+        drawerOverlay.style.visibility = "hidden";
+        drawer.style.right = "-420px";
+    };
+
+
+    /* ---------------- RENDER CART ---------------- */
+    function renderCart() {
+        const cart = getCart();
+        cartItemsDiv.innerHTML = "";
+        let total = 0;
+
+        cart.forEach(item => {
+            total += item.price * item.qty;
+            cartItemsDiv.innerHTML += `
+            <div class="lux-cart-item">
+                <img src="${item.image}" class="lux-cart-thumb">
+                <div class="lux-cart-info">
+                    <h4>${item.name}</h4>
+                    <p>£${item.price.toFixed(2)} × ${item.qty}</p>
+                </div>
+            </div>
+        `;
+        });
+
+        cartTotalSpan.textContent = "£" + total.toFixed(2);
+        cartBadge.textContent = cart.reduce((a,b)=>a+b.qty,0);
+    }
+
+    renderCart();
+</script>
+
+</body>
+</html>

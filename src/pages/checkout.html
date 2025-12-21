@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Checkout — FoodHub</title>
+
+    <style>
+        body {
+            margin: 0;
+            background: #0b0b0b;
+            color: white;
+            font-family: "Inter", sans-serif;
+        }
+
+        /* NAV */
+        .lux-nav {
+            width: 100%;
+            padding: 18px 40px;
+            background: rgba(0,0,0,0.55);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .lux-nav-left {
+            font-family: "Cormorant Garamond", serif;
+            font-size: 1.8rem;
+            color: #d4af37;
+        }
+
+        .lux-nav-right a {
+            margin-left: 20px;
+            color: white;
+            text-decoration: none;
+        }
+        .lux-nav-right a:hover {
+            color: #d4af37;
+        }
+
+        /* TITLE */
+        h1 {
+            font-family: "Cormorant Garamond", serif;
+            color: #d4af37;
+            margin: 30px 40px;
+            font-size: 2rem;
+        }
+
+        /* CHECKOUT BOX */
+        .checkout-box {
+            width: 600px;
+            margin: auto;
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+        }
+
+        .cart-item {
+            background: rgba(255,255,255,0.07);
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+        }
+
+        .cart-item p {
+            margin: 6px 0;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 12px;
+            background: #111;
+            border-radius: 8px;
+            border: 1px solid #444;
+            color: white;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 16px;
+            background: #d4af37;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            color: black;
+        }
+
+        button:hover {
+            background: white;
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="lux-nav">
+    <div class="lux-nav-left">FOODHUB CHECKOUT</div>
+
+    <div class="lux-nav-right">
+        <a href="index.html">Home</a>
+        <a href="menu.html">Menu</a>
+        <a href="login.html">Login</a>
+    </div>
+</nav>
+
+<h1>Your Order</h1>
+
+<div class="checkout-box">
+    <div id="cartItems"></div>
+
+    <h2 style="color:#d4af37; margin-top:24px;">Payment Details</h2>
+
+    <input id="cardName" placeholder="Name on Card">
+    <input id="cardNumber" placeholder="Card Number">
+    <input id="expiry" placeholder="Expiry Date">
+    <input id="cvv" placeholder="CVV">
+
+    <button id="placeOrderBtn">Place Order</button>
+</div>
+
+<script type="module">
+    import { getCart, clearCart } from "../js/cart.js";
+
+    const cartContainer = document.getElementById("cartItems");
+
+    /* 1 — Render cart items */
+    function renderCart() {
+        const cart = getCart();
+
+        if (cart.length === 0) {
+            cartContainer.innerHTML = "<p>Your cart is empty.</p>";
+            return;
+        }
+
+        cartContainer.innerHTML = "";
+        cart.forEach(item => {
+            const div = document.createElement("div");
+            div.className = "cart-item";
+
+            div.innerHTML = `
+                <p><strong>${item.name}</strong></p>
+                <p>Qty: ${item.qty}</p>
+                <p>£${(item.price * item.qty).toFixed(2)}</p>
+            `;
+
+            cartContainer.appendChild(div);
+        });
+    }
+
+    renderCart();
+
+    /* 2 — Save order to localStorage */
+    function saveOrder(order) {
+        const existing = JSON.parse(localStorage.getItem("orders") || "[]");
+        existing.push(order);
+        localStorage.setItem("orders", JSON.stringify(existing));
+    }
+
+    /* 3 — Place order button */
+    document.getElementById("placeOrderBtn").onclick = () => {
+        const cart = getCart();
+
+        if (cart.length === 0) {
+            alert("Your cart is empty.");
+            return;
+        }
+
+        const order = {
+            id: "ORD-" + Math.floor(Math.random() * 90000 + 10000),
+            items: cart,
+            total: cart.reduce((sum, i) => sum + i.qty * i.price, 0),
+            status: "Paid",
+            timestamp: Date.now()
+        };
+
+        saveOrder(order);
+        clearCart();
+
+        alert("Order placed successfully!");
+
+        window.location.href = "staff.html";
+    };
+</script>
+
+</body>
+</html>
